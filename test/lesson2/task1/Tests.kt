@@ -42,6 +42,7 @@ class Tests {
         assertEquals("199 лет", ageDescription(199))
     }
 
+
     @Test
     @Tag("Easy")
     fun timeForHalfWay() {

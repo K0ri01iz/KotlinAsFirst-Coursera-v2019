@@ -68,16 +68,20 @@ sealed class Expression {
             PLUS -> {
                 left.calculate(x) + right.calculate(x)
             }
+
             MINUS -> {
                 left.calculate(x) - right.calculate(x)
             }
+
             TIMES -> {
                 left.calculate(x) * right.calculate(x)
             }
+
             DIV -> {
                 left.calculate(x) / right.calculate(x)
             }
         }
+
         is Negate -> -arg.calculate(x)
     }
 }

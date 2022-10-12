@@ -84,8 +84,7 @@ class Tests {
         assertEquals(102334155, fib(40))
         assertEquals(1134903170, fib(45))
         assertEquals(1836311903, fib(46))
-        // Just to calculate it
-        fib(50)
+        assertEquals(317811, fib(28))
     }
 
     @Test
@@ -178,6 +177,7 @@ class Tests {
         assertEquals(0.0, sin(PI, 1e-5), 1e-5)
         assertEquals(-1.0, sin(3.0 * PI / 2.0, 1e-5), 1e-5)
         assertEquals(0.0, sin(100 * PI, 1e-5), 1e-5)
+        assertEquals(0.0, sin(99 * PI, 1e-5), 1e-5)
         assertNotEquals(kotlin.math.sin(1.0), sin(1.0, 1.0))
         assertNotEquals(kotlin.math.sin(-0.5), sin(-0.5, 1.0))
     }
@@ -190,6 +190,7 @@ class Tests {
         assertEquals(-1.0, cos(PI, 1e-5), 1e-5)
         assertEquals(0.0, cos(3.0 * PI / 2.0, 1e-5), 1e-5)
         assertEquals(1.0, cos(100 * PI, 1e-5), 1e-5)
+        assertEquals(-1.0, cos(99 * PI, 1e-5), 1e-5)
         assertNotEquals(kotlin.math.cos(1.0), cos(1.0, 1.0))
         assertNotEquals(kotlin.math.cos(0.5), cos(-0.5, 1.0))
     }
@@ -198,6 +199,8 @@ class Tests {
     @Tag("Normal")
     fun revert() {
         assertEquals(87431, revert(13478))
+        assertEquals(807, revert(708))
+        assertEquals(7, revert(700))
         assertEquals(0, revert(0))
         assertEquals(3, revert(3))
         assertEquals(111, revert(111))
@@ -230,6 +233,8 @@ class Tests {
     fun squareSequenceDigit() {
         assertEquals(1, squareSequenceDigit(1))
         assertEquals(4, squareSequenceDigit(2))
+        assertEquals(1, squareSequenceDigit(4))
+        assertEquals(6, squareSequenceDigit(5))
         assertEquals(5, squareSequenceDigit(7))
         assertEquals(6, squareSequenceDigit(12))
         assertEquals(0, squareSequenceDigit(17))

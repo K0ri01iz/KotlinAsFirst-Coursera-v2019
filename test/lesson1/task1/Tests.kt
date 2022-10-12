@@ -68,6 +68,7 @@ class Tests {
         assertEquals(PI / 2.0, angleInRadian(90, 0, 0), 1e-5)
     }
 
+
     @Test
     @Tag("Trivial")
     fun trackLength() {
