@@ -188,6 +188,13 @@ class Tests {
                 mapOf("Emergency" to "911", "Police" to "02")
             )
         )
+        assertEquals(
+            mapOf("Emergency" to "112", "Fire department" to "01, 911", "Police" to "02"),
+            mergePhoneBooks(
+                mapOf("Emergency" to "112", "Fire department" to "01"),
+                mapOf("Fire department" to "911", "Police" to "02")
+            )
+        )
     }
 
     @Test
@@ -228,7 +235,8 @@ class Tests {
             )
         )
     }
-
+}
+/*
     @Test
     @Tag("Normal")
     fun canBuildFrom() {
@@ -332,3 +340,4 @@ class Tests {
 
     // TODO: map task tests
 }
+*/

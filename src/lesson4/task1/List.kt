@@ -593,3 +593,12 @@ fun russian(n: Int): String {
     } while (step != list.size)
     return rusDig
 }
+
+fun List<Int>.any(lambda: (n: Int) -> Boolean): Boolean {
+    for (element in this) {
+        if (lambda(element)) {
+            return true
+            }
+    }
+    return false
+}
