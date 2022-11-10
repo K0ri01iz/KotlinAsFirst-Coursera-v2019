@@ -95,9 +95,9 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
     val journal = mutableMapOf<Int, List<String>>()
     for (mark in 1..5) {
         val names = mutableListOf<String>()
-        for (item in grades) {
-            if (item.value == mark) {
-                names += item.key
+        for ((student, grade) in grades) {
+            if (grade == mark) {
+                names += student
             }
         }
         if (names.size != 0) {
@@ -119,8 +119,8 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
-    for (elem in a) {
-        if (elem.value != b[elem.key]) {
+    for ((name1, name2) in a) {
+        if (name2 != b[name1]) {
             return false
         }
     }
@@ -144,9 +144,9 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit {
     val c = mutableSetOf<String>()
-    for (item in a) {
-        if (item.value == b[item.key]) {
-            c += item.key
+    for ((name1, name2) in a) {
+        if (name2 == b[name1]) {
+            c += name1
         }
     }
     a -= c
@@ -180,20 +180,20 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
     val resMap = mutableMapOf<String, String>()
-    for (item in mapA) {
+    for ((name, phone) in mapA) {
         var number = String()
-        if (item.value != mapB[item.key]) {
-            number += item.value + ", "
-            number += mapB[item.key]
-            resMap[item.key] = number
+        if (phone != mapB[name]) {
+            number += "$phone, "
+            number += mapB[name]
+            resMap[name] = number
         }
-        if (item.key !in mapB) {
-            resMap[item.key] = item.value
+        if (name !in mapB) {
+            resMap[name] = phone
         }
     }
-    for (item in mapB) {
-        if (item.key !in resMap) {
-            resMap[item.key] = item.value
+    for ((name, phone) in mapB) {
+        if (name !in resMap) {
+            resMap[name] = phone
         }
     }
     return resMap
@@ -245,23 +245,19 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    val price = mutableListOf<Double>()
+    var price = Double.MAX_VALUE
     var cheapest: String? = null
-    for (item in stuff) {
-        if (item.value.first == kind) {
-            price += item.value.second
-        }
-    }
-    val minPrice = price.minOrNull()
-    for (item in stuff) {
-        if (item.value.second == minPrice) {
-            cheapest = item.key
+    for ((name, product) in stuff) {
+        if (product.first == kind) {
+            if (product.second <= price) {
+                price = product.second
+                cheapest = name
+            }
         }
     }
     return cheapest
 }
 
-/*
 /**
  * Средняя
  *
@@ -271,7 +267,14 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    val letter = mutableSetOf<Char>()
+    word.toLowerCase().trim()
+    for (i in word.indices) {
+        letter += word[i]
+    }
+    return chars.toSet() == letter
+}
 
 /**
  * Средняя
@@ -285,7 +288,25 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun extractRepeats(list: List<String>): Map<String, Int> {
+    val result = mutableMapOf<String, Int>()
+    val compare = list.toSet()
+    if (list.size == compare.size) {
+        return result
+    }
+    for (item in compare) {
+        var count = 0
+        for (i in list.indices) {
+            if (item == list[i]) {
+                count++
+            }
+        }
+        if (count != 1) {
+            result[item] = count
+        }
+    }
+    return result
+}
 
 /**
  * Средняя
@@ -296,7 +317,18 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean = TODO()
+fun hasAnagrams(words: List<String>): Boolean {
+    val set = mutableSetOf<List<Char>>()
+    for (element in words) {
+        element.trim()
+        val letter = mutableListOf<Char>()
+        for (i in element) {
+            letter += i
+        }
+        set += letter.sorted()
+    }
+    return words.size != set.size
+}
 
 /**
  * Сложная
@@ -322,7 +354,24 @@ fun hasAnagrams(words: List<String>): Boolean = TODO()
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val result = mutableMapOf<String, Set<String>>()
+    val people = mutableSetOf<String>()
+    for (item in friends) {
+        people += item.value
+        for (man in people) {
+            for (element in friends) {
+                if (man == element.key) {
+                    result[item.key] = (people + element.value - item.key).sorted().toSet()
+                }
+            }
+            if (man !in friends) {
+                result[man] = setOf()
+            }
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -341,8 +390,10 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 
+}
+/*
 /**
  * Очень сложная
  *

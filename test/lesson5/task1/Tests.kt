@@ -234,9 +234,15 @@ class Tests {
                 "печенье"
             )
         )
+        assertEquals(
+            "Наполеон",
+            findCheapestStuff(
+                mapOf("Мария" to ("печенье" to 20.0), "Наполеон" to ("торт" to 500.0), "Орео" to ("печенье" to 100.0)),
+                "торт"
+            )
+        )
     }
-}
-/*
+
     @Test
     @Tag("Normal")
     fun canBuildFrom() {
@@ -268,6 +274,7 @@ class Tests {
         assertFalse(hasAnagrams(emptyList()))
         assertTrue(hasAnagrams(listOf("рот", "свет", "тор")))
         assertFalse(hasAnagrams(listOf("рот", "свет", "код", "дверь")))
+        assertTrue(hasAnagrams(listOf("рорт", "свет", "торр")))
     }
 
     @Test
@@ -318,7 +325,8 @@ class Tests {
             findSumOfTwo(listOf(1, 2, 3), 6)
         )
     }
-
+}
+/*
     @Test
     @Tag("Impossible")
     fun bagPacking() {
