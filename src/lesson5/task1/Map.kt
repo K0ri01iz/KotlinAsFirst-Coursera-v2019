@@ -191,13 +191,29 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
             resMap[name] = phone
         }
     }
+    return mapB + resMap
+}
+
+/*fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+    val resMap = mutableMapOf<String, String>()
+    for ((name, phone) in mapA) {
+        var number = String()
+        if (phone != mapB[name]) {
+            number += "$phone, "
+            number += mapB[name]
+            resMap[name] = number
+        }
+        if (name !in mapB) {
+            resMap[name] = phone
+        }
+    }
     for ((name, phone) in mapB) {
         if (name !in resMap) {
             resMap[name] = phone
         }
     }
     return resMap
-}
+}*/
 
 /**
  * Средняя
