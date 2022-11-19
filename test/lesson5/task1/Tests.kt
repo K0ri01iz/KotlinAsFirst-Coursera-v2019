@@ -325,8 +325,7 @@ class Tests {
             findSumOfTwo(listOf(1, 2, 3), 6)
         )
     }
-}
-/*
+
     @Test
     @Tag("Impossible")
     fun bagPacking() {
@@ -334,6 +333,26 @@ class Tests {
             setOf("Кубок"),
             bagPacking(
                 mapOf("Кубок" to (500 to 2000), "Слиток" to (1000 to 5000)),
+                850
+            )
+        )
+        assertEquals(
+            setOf("Свиток"),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (500 to 2000), "Камень" to (350 to 100), "Свиток" to (850 to 3100),
+                    "Ожерелье" to (250 to 1000), "Слиток" to (1000 to 5000),
+                ),
+                850
+            )
+        )
+        assertEquals(
+            setOf("Кубок", "Ожерелье"),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (500 to 2000), "Камень" to (350 to 100), "Свиток" to (850 to 2900),
+                    "Ожерелье" to (250 to 1000), "Слиток" to (1000 to 5000),
+                ),
                 850
             )
         )
@@ -348,4 +367,3 @@ class Tests {
 
     // TODO: map task tests
 }
-*/

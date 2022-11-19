@@ -194,27 +194,6 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     return mapB + resMap
 }
 
-/*fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
-    val resMap = mutableMapOf<String, String>()
-    for ((name, phone) in mapA) {
-        var number = String()
-        if (phone != mapB[name]) {
-            number += "$phone, "
-            number += mapB[name]
-            resMap[name] = number
-        }
-        if (name !in mapB) {
-            resMap[name] = phone
-        }
-    }
-    for ((name, phone) in mapB) {
-        if (name !in resMap) {
-            resMap[name] = phone
-        }
-    }
-    return resMap
-}*/
-
 /**
  * Средняя
  *
@@ -419,7 +398,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     }
     return result
 }
-/*
+
 /**
  * Очень сложная
  *
@@ -441,5 +420,85 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
-*/
+
+fun possiblePair(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Set<Int>> {
+    val result = mutableSetOf<Set<Int>>()
+
+    /**
+     * Делаем список из элементов по весу, отсекая те, что не влезут в рюкзак
+     */
+    val weightList = mutableListOf<Int>()
+    for ((name, pair) in treasures) {
+        if (pair.first <= capacity) {
+            weightList.add(pair.first)
+        }
+    }
+    /**
+     * Получаем множество возможных пар, вмещающихся по весу в рюкзак
+     */
+    var pairs = mutableSetOf<Int>()
+    for (i in weightList.indices) {
+        if (weightList[i] == capacity) {
+            pairs += weightList[i]
+            result += pairs
+        }
+    }
+    pairs = mutableSetOf<Int>()
+    weightList.remove(capacity)
+    for (element in weightList) {
+        if (weightList.size == 1) {
+            pairs += element
+            result += pairs
+        }
+        val sublist = weightList.filter { it != element }
+        for (i in sublist.indices) {
+            pairs += element
+            var freeSpace = capacity - element
+            var k = i
+            while (k != sublist.size) {
+                if (freeSpace >= sublist[k]) {
+                    freeSpace -= sublist[k]
+                    pairs += sublist[k]
+                }
+                k++
+            }
+            result += pairs
+            pairs = mutableSetOf<Int>()
+        }
+    }
+    return result.toSet()
+}
+
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val result = mutableSetOf<String>()
+    val weightPairs = possiblePair(treasures, capacity)
+    val map = mutableMapOf<Set<String>, Int>()
+    /**
+     * Получаем массив из множества названий сокровищ, вмещающихся по весу в рюкзак, с их общей стоимостью
+     */
+    for (element in weightPairs) {
+        var sum = 0
+        val set = mutableSetOf<String>()
+        for (item in element) {
+            for ((name, pair) in treasures) {
+                if (item == pair.first) {
+                    set += name
+                    sum += pair.second
+                }
+            }
+        }
+        map[set] = sum
+    }
+    /**
+     * Находим в массиве минимальную стоимость и выдаём множество соответствующих названий сокровищ
+     */
+    var maxVal = 0
+    for (element in map) {
+        if (element.value > maxVal) {
+            maxVal = element.value
+            result.clear()
+            result += element.key
+        }
+    }
+    return result.toSet()
+}
