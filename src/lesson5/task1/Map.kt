@@ -437,20 +437,13 @@ fun possiblePair(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Set
      * Получаем множество возможных пар, вмещающихся по весу в рюкзак
      */
     var pairs = mutableSetOf<Int>()
-    for (i in weightList.indices) {
-        if (weightList[i] == capacity) {
-            pairs += weightList[i]
-            result += pairs
-        }
-    }
-    pairs = mutableSetOf<Int>()
-    weightList.remove(capacity)
     for (element in weightList) {
-        if (weightList.size == 1) {
+        if ((element == capacity) || (weightList.size == 1)) {
             pairs += element
             result += pairs
         }
-        val sublist = weightList.filter { it != element }
+        pairs = mutableSetOf<Int>()
+        val sublist = weightList.filter { it != element && it != capacity }
         for (i in sublist.indices) {
             pairs += element
             var freeSpace = capacity - element
