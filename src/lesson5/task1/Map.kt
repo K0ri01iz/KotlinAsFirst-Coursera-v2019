@@ -181,11 +181,8 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
     val resMap = mutableMapOf<String, String>()
     for ((name, phone) in mapA) {
-        var number = String()
         if (phone != mapB[name]) {
-            number += "$phone, "
-            number += mapB[name]
-            resMap[name] = number
+            resMap[name] = "$phone, ${mapB[name]}"
         }
         if (name !in mapB) {
             resMap[name] = phone
@@ -206,20 +203,20 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val result = mutableMapOf<String, Double>()
-    val name = mutableSetOf<String>()
+    val setName = mutableSetOf<String>()
+    var sum = 0.0
+    var count = 0
     for (i in stockPrices.indices) {
-        name += stockPrices[i].first
-    }
-    for (word in name) {
-        var price = 0.0
-        var count = 0
-        for (k in stockPrices.indices) {
-            if (word == stockPrices[k].first) {
-                price += stockPrices[k].second
-                count++
-            }
+        if (stockPrices[i].first !in setName) {
+            sum = 0.0
+            count = 0
         }
-        result[word] = price / count
+        setName += stockPrices[i].first
+        if (stockPrices[i].first in setName) {
+            sum += stockPrices[i].second
+            count++
+        }
+        result[stockPrices[i].first] = sum / count
     }
     return result
 }
@@ -264,9 +261,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     val letter = mutableSetOf<Char>()
-    word.toLowerCase().trim()
-    for (i in word.indices) {
-        letter += word[i]
+    val newWord = word.toLowerCase().trim()
+    for (i in newWord.indices) {
+        letter += newWord[i]
     }
     return chars.toSet() == letter
 }
@@ -285,16 +282,15 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
-    val compare = list.toSet()
-    if (list.size == compare.size) {
-        return result
-    }
-    for (item in compare) {
-        var count = 0
-        for (i in list.indices) {
-            if (item == list[i]) {
-                count++
-            }
+    val set = mutableSetOf<String>()
+    var count = 0
+    for (item in list) {
+        if (item !in set) {
+            count = 0
+        }
+        set += item
+        if (item in set) {
+            count++
         }
         if (count != 1) {
             result[item] = count
@@ -315,14 +311,19 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
 fun hasAnagrams(words: List<String>): Boolean {
     val set = mutableSetOf<List<Char>>()
     for (element in words) {
-        element.trim()
+        val newEl = element.trim()
         val letter = mutableListOf<Char>()
-        for (i in element) {
+        for (i in newEl) {
             letter += i
         }
-        set += letter.sorted()
+        val sorted = letter.sorted()
+        if (set.contains(sorted)) {
+            return true
+        } else {
+            set += sorted
+        }
     }
-    return words.size != set.size
+    return false
 }
 
 /**
@@ -386,17 +387,28 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    var result = Pair(-1, -1)
     for (i in list.indices) {
-        val sublist = list.filter { it != list[i] }
-        if ((number - list[i]) in sublist) {
-            result = Pair(i, list.indexOf(number - list[i]))
-            if (result != Pair(-1, -1)) {
-                return result
+        val sublist = mutableListOf<Int>()
+        val indexes = mutableListOf<Int>()
+        (list.indices).map {
+            if (it != i) {
+                indexes += it
             }
         }
+        sublist += list.slice(indexes)
+        if ((number - list[i]) in sublist) {
+            var position = 0
+            if ((number - list[i]) == list[i]) {
+                for (k in list.indices) {
+                    if (list[k] == list[i])
+                        position = k
+                }
+                return Pair(i, position)
+            }
+            return Pair(i, list.indexOf((number - list[i])))
+        }
     }
-    return result
+    return Pair(-1, -1)
 }
 
 /**
@@ -436,36 +448,35 @@ fun possiblePair(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Set
     /**
      * Получаем множество возможных пар, вмещающихся по весу в рюкзак
      */
-    var pairs = mutableSetOf<Int>()
     for (element in weightList) {
+        val pairs = mutableSetOf<Int>()
         if ((element == capacity) || (weightList.size == 1)) {
             pairs += element
             result += pairs
         }
-        pairs = mutableSetOf<Int>()
         val sublist = weightList.filter { it != element && it != capacity }
         for (i in sublist.indices) {
-            pairs += element
+            val pairs2 = mutableSetOf<Int>()
+            pairs2 += element
             var freeSpace = capacity - element
             var k = i
             while (k != sublist.size) {
                 if (freeSpace >= sublist[k]) {
                     freeSpace -= sublist[k]
-                    pairs += sublist[k]
+                    pairs2 += sublist[k]
                 }
                 k++
             }
-            result += pairs
-            pairs = mutableSetOf<Int>()
+            result += pairs2
         }
     }
     return result.toSet()
 }
 
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    val result = mutableSetOf<String>()
+    var result = mutableSetOf<String>()
     val weightPairs = possiblePair(treasures, capacity)
-    val map = mutableMapOf<Set<String>, Int>()
+    var resSum = 0
     /**
      * Получаем массив из множества названий сокровищ, вмещающихся по весу в рюкзак, с их общей стоимостью
      */
@@ -480,18 +491,10 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
                 }
             }
         }
-        map[set] = sum
-    }
-    /**
-     * Находим в массиве минимальную стоимость и выдаём множество соответствующих названий сокровищ
-     */
-    var maxVal = 0
-    for (element in map) {
-        if (element.value > maxVal) {
-            maxVal = element.value
-            result.clear()
-            result += element.key
+        if (sum > resSum) {
+            resSum = sum
+            result = set
         }
     }
-    return result.toSet()
+    return result
 }

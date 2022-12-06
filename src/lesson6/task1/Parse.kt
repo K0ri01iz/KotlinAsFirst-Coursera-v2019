@@ -42,7 +42,7 @@ fun timeSecondsToStr(seconds: Int): String {
 /**
  * Пример: консольный ввод
  */
-fun main() {
+/*fun main() {
     println("Введите время в формате ЧЧ:ММ:СС")
     val line = readLine()
     if (line != null) {
@@ -55,7 +55,7 @@ fun main() {
     } else {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
-}
+}*/
 
 
 /**
@@ -69,7 +69,51 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    try {
+        if (parts.size != 3) {
+            throw IllegalArgumentException()
+        }
+        val month = when (parts[1]) {
+            "января" -> 1
+            "февраля" -> 2
+            "марта" -> 3
+            "апреля" -> 4
+            "мая" -> 5
+            "июня" -> 6
+            "июля" -> 7
+            "августа" -> 8
+            "сентября" -> 9
+            "октября" -> 10
+            "ноября" -> 11
+            "декабря" -> 12
+            else -> {
+                throw IllegalArgumentException()
+            }
+        }
+        val year = parts[2].toInt()
+        val posDate = if (month == 2) {
+            when {
+                year % 400 == 0 -> 29
+                year % 100 == 0 -> 28
+                year % 4 == 0 -> 29
+                else -> 28
+            }
+        } else if (((month in 1..7) && (month % 2 == 1)) || ((month in 8..12) && (month % 2 == 0))) {
+            31
+        } else {
+            30
+        }
+        val day = parts[0].toInt()
+        if (day !in 1..posDate) {
+            throw IllegalArgumentException()
+        }
+        return String.format("%02d.%02d.%d", day, month, year)
+    } catch (e: IllegalArgumentException) {
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -81,7 +125,52 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val parts = digital.split(".")
+    try {
+        if (parts.size != 3) {
+            return ""
+        }
+        val monthInt = parts[1].toInt()
+        val month = when (monthInt) {
+            1 -> "января"
+            2 -> "февраля"
+            3 -> "марта"
+            4 -> "апреля"
+            5 -> "мая"
+            6 -> "июня"
+            7 -> "июля"
+            8 -> "августа"
+            9 -> "сентября"
+            10 -> "октября"
+            11 -> "ноября"
+            12 -> "декабря"
+            else -> {
+                return ""
+            }
+        }
+        val year = parts[2].toInt()
+        val posDate = if (monthInt == 2) {
+            when {
+                year % 400 == 0 -> 29
+                year % 100 == 0 -> 28
+                year % 4 == 0 -> 29
+                else -> 28
+            }
+        } else if (((monthInt in 1..7) && (monthInt % 2 == 1)) || ((monthInt in 8..12) && (monthInt % 2 == 0))) {
+            31
+        } else {
+            30
+        }
+        val day = parts[0].toInt()
+        if (day > posDate) {
+            return ""
+        }
+        return String.format("%d %s %d", day, month, year)
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -97,8 +186,25 @@ fun dateDigitToStr(digital: String): String = TODO()
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val str = phone.filter { it != ' ' && it != '-' }
+    try {
+        if (str.any { it !in '0'..'9' && it != '(' && it != ')' && it != '+' }) {
+            throw IllegalArgumentException()
+        }
+        if (str.contains("()")) {
+            throw IllegalArgumentException()
+        }
+        if (!Regex("""^\+?[^+]+""").matches(str)) {
+            throw IllegalArgumentException()
+        }
+    } catch (error: IllegalArgumentException) {
+        return ""
+    }
+    return str.filter { it != '(' && it != ')' }
+}
 
+/*
 /**
  * Средняя
  *
@@ -209,3 +315,4 @@ fun fromRoman(roman: String): Int = TODO()
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+*/
