@@ -59,7 +59,6 @@ fun removeFillerWords(
     vararg fillerWords: String
 ): List<String> {
     val fillerWordSet = setOf(*fillerWords)
-
     val res = mutableListOf<String>()
     for (word in text) {
         if (word !in fillerWordSet) {
@@ -261,7 +260,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     val letter = mutableSetOf<Char>()
-    val newWord = word.toLowerCase().trim()
+    val newWord = word.toLowerCase().filter { it != ' ' }
     for (i in newWord.indices) {
         letter += newWord[i]
     }
@@ -282,18 +281,17 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
-    val set = mutableSetOf<String>()
-    var count = 0
+    val map = mutableMapOf<String, Int>()
     for (item in list) {
-        if (item !in set) {
-            count = 0
+        if (item !in map) {
+            map[item] = 1
+        } else {
+            map[item] = map[item]!! + 1
         }
-        set += item
-        if (item in set) {
-            count++
-        }
-        if (count != 1) {
-            result[item] = count
+    }
+    for (item in map) {
+        if (item.value != 1) {
+            result[item.key] = item.value
         }
     }
     return result
@@ -311,7 +309,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
 fun hasAnagrams(words: List<String>): Boolean {
     val set = mutableSetOf<List<Char>>()
     for (element in words) {
-        val newEl = element.trim()
+        val newEl = element.filter { it != ' ' }
         val letter = mutableListOf<Char>()
         for (i in newEl) {
             letter += i
@@ -352,19 +350,16 @@ fun hasAnagrams(words: List<String>): Boolean {
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, Set<String>>()
-    val people = mutableSetOf<String>()
     for (item in friends) {
-        people += item.value
-        for (man in people) {
-            for (element in friends) {
-                if (man == element.key) {
-                    result[item.key] = (people + element.value - item.key).sorted().toSet()
-                }
-            }
-            if (man !in friends) {
-                result[man] = setOf()
+        var resValue = item.value
+        for (element in resValue) {
+            if (element in friends) {
+                resValue += friends[element]!!
+            } else {
+                result[element] = setOf()
             }
         }
+        result[item.key] = resValue - item.key
     }
     return result
 }
@@ -387,25 +382,16 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    val size = list.size
     for (i in list.indices) {
-        val sublist = mutableListOf<Int>()
-        val indexes = mutableListOf<Int>()
-        (list.indices).map {
-            if (it != i) {
-                indexes += it
-            }
+        val addList = when (i) {
+            0 -> list.subList(1, size)
+            size - 1 -> list.subList(0, size - 1)
+            else -> list.subList(0, i) + list.subList(i + 1, size)
         }
-        sublist += list.slice(indexes)
-        if ((number - list[i]) in sublist) {
-            var position = 0
-            if ((number - list[i]) == list[i]) {
-                for (k in list.indices) {
-                    if (list[k] == list[i])
-                        position = k
-                }
-                return Pair(i, position)
-            }
-            return Pair(i, list.indexOf((number - list[i])))
+        val second = number - list[i]
+        if (second in addList) {
+            return Pair(i, addList.indexOf(second) + 1)
         }
     }
     return Pair(-1, -1)

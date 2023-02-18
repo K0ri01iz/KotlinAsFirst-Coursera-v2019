@@ -67,8 +67,7 @@ class Tests {
         assertEquals("", flattenPhoneNumber("ab-123"))
         assertEquals("", flattenPhoneNumber("134_+874"))
     }
-}
-/*
+
     @Test
     @Tag("Normal")
     fun bestLongJump() {
@@ -83,8 +82,10 @@ class Tests {
     @Tag("Hard")
     fun bestHighJump() {
         assertEquals(226, bestHighJump("226 +"))
+        assertEquals(228, bestHighJump("226 + 228 %+"))
         assertEquals(-1, bestHighJump("???"))
         assertEquals(230, bestHighJump("220 + 224 %+ 228 %- 230 + 232 %%- 234 %"))
+        assertEquals(-1, bestHighJump("220 %- 228 %% 234 % 201 -"))
     }
 
     @Test
@@ -94,7 +95,9 @@ class Tests {
         assertEquals(4, plusMinus("2 + 2"))
         assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(-1, plusMinus("0 - 1"))
+        assertEquals(-1, plusMinus("- 1 + 0"))
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+2") }
+        assertThrows(IllegalArgumentException::class.java) { plusMinus("3 2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+ 4") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - -2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("44 - - 12") }
@@ -109,7 +112,8 @@ class Tests {
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
         assertEquals(9, firstDuplicateIndex("Мы пошли прямо Прямо располагался магазин"))
     }
-
+}
+/*
     @Test
     @Tag("Hard")
     fun mostExpensive() {

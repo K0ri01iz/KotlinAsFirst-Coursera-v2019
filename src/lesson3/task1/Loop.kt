@@ -109,12 +109,12 @@ fun fib(n: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    val maxDigit = max(m,n)
-    val minDigit = min(m,n)
-    if (maxDigit % minDigit == 0) {
+    var maxDigit = max(m,n)
+    var minDigit = min(m,n)
+    var residual = maxDigit % minDigit
+    if (residual == 0) {
         return maxDigit
     }
-    var residual = maxDigit % minDigit
     var koef = minDigit
     var accessory = residual
     do {
@@ -175,18 +175,18 @@ fun isCoPrime(m: Int, n: Int): Boolean {
     var residual = maxDigit % minDigit
     var koef = minDigit
     var accessory = residual
-    if (maxDigit % minDigit == 0) {
+    if (residual == 0) {
         return false
     }
-        while (residual != 1) {
-            residual = koef % residual
-            if (residual == 0) {
-                return false
-            }
-            koef = accessory
-            accessory = residual
+    while (residual != 1) {
+        residual = koef % residual
+        if (residual == 0) {
+            return false
         }
-        return residual == 1
+        koef = accessory
+        accessory = residual
+    }
+    return residual == 1
 }
 
 /**

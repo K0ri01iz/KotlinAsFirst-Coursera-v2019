@@ -38,11 +38,11 @@ fun timeSecondsToStr(seconds: Int): String {
     val second = seconds % 60
     return String.format("%02d:%02d:%02d", hour, minute, second)
 }
-
+/*
 /**
  * Пример: консольный ввод
  */
-/*fun main() {
+fun main() {
     println("Введите время в формате ЧЧ:ММ:СС")
     val line = readLine()
     if (line != null) {
@@ -56,7 +56,6 @@ fun timeSecondsToStr(seconds: Int): String {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
 }*/
-
 
 /**
  * Средняя
@@ -129,7 +128,7 @@ fun dateDigitToStr(digital: String): String {
     val parts = digital.split(".")
     try {
         if (parts.size != 3) {
-            return ""
+            throw IllegalArgumentException()
         }
         val monthInt = parts[1].toInt()
         val month = when (monthInt) {
@@ -146,7 +145,7 @@ fun dateDigitToStr(digital: String): String {
             11 -> "ноября"
             12 -> "декабря"
             else -> {
-                return ""
+                throw IllegalArgumentException()
             }
         }
         val year = parts[2].toInt()
@@ -163,11 +162,11 @@ fun dateDigitToStr(digital: String): String {
             30
         }
         val day = parts[0].toInt()
-        if (day > posDate) {
-            return ""
+        if (day !in 1..posDate) {
+            throw IllegalArgumentException()
         }
         return String.format("%d %s %d", day, month, year)
-    } catch (e: NumberFormatException) {
+    } catch (e: IllegalArgumentException) {
         return ""
     }
 }
@@ -204,7 +203,6 @@ fun flattenPhoneNumber(phone: String): String {
     return str.filter { it != '(' && it != ')' }
 }
 
-/*
 /**
  * Средняя
  *
@@ -215,7 +213,29 @@ fun flattenPhoneNumber(phone: String): String {
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    var result = -1
+    try {
+        if (jumps.any { it !in '0'..'9' && it != '-' && it != '%' && it != ' ' }) {
+            throw IllegalArgumentException()
+        }
+        val listJumps = jumps.split(" ")
+        if (listJumps.isEmpty()) {
+            throw IllegalArgumentException()
+        }
+        for (item in listJumps) {
+            if ((item != "-") && (item != "%")) {
+                val jump = item.toInt()
+                if (jump > result) {
+                    result = jump
+                }
+            }
+        }
+    } catch (error: IllegalArgumentException) {
+        return result
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -228,7 +248,59 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+/*fun bestHighJump(jumps: String): Int {
+    var result = -1
+    try {
+        if (jumps.any { it !in '0'..'9' && it != '+' && it != '%' && it != '-' && it != ' ' }) {
+            throw IllegalArgumentException()
+        }
+        if (!jumps.contains('+')) {
+            throw IllegalArgumentException()
+        }
+        val matches = Regex("""(\d+\s+[\%|\-]*\++)""").findAll(jumps)
+        val jumpList = matches.map { it.groupValues[0] }
+        for (element in jumpList) {
+            val successJump = element.filter { it != ' ' && it != '-' && it != '%' && it != '+' }.toInt()
+            if (successJump > result) {
+                result = successJump
+            }
+        }
+    } catch (error: IllegalArgumentException) {
+        return result
+    }
+    return result
+}*/
+
+fun bestHighJump(jumps: String): Int {
+    var result = -1
+    try {
+        if (jumps.any { it !in '0'..'9' && it != '+' && it != '%' && it != '-' && it != ' ' }) {
+            throw IllegalArgumentException()
+        }
+        if (!jumps.contains('+')) {
+            throw IllegalArgumentException()
+        }
+        if (jumps.contains("++")) {
+            throw IllegalArgumentException()
+        }
+        if (jumps.first() !in '0'..'9' && jumps.first() != ' ') {
+            throw IllegalArgumentException()
+        }
+        val jumpList = jumps.filter { it != '%' && it != '-' }.split(' ')
+        var successJump = result
+        for (i in 0 until jumpList.size step 2) {
+            if (jumpList[i + 1] == "+") {
+                successJump = jumpList[i].toInt()
+            }
+            if (successJump > result) {
+                result = successJump
+            }
+        }
+    } catch (error: IllegalArgumentException) {
+        return result
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -239,7 +311,33 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    var result = 0
+    if (expression.any { it !in '0'..'9' && it != '+' && it != '-' && it != ' ' }) {
+        throw IllegalArgumentException()
+    }
+    if (expression.first() !in '0'..'9' && expression.first() != ' ' && expression.first() != '-') {
+        throw IllegalArgumentException()
+    }
+    if (expression.contains(Regex("""\d+\s+\d+"""))) {
+        throw IllegalArgumentException()
+    }
+    if (expression.contains(Regex("""(\+|\-)+\s+(\+|\-)+"""))) {
+        throw IllegalArgumentException()
+    }
+    val list = expression.split(' ')
+    var sign = 1
+    for (i in list.indices) {
+        if (list[i] == "-") {
+            sign = -1
+        } else if (list[i] == "+") {
+            sign = 1
+        } else {
+            result += sign * list[i].toInt()
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -250,8 +348,10 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
 
+}
+/*
 /**
  * Сложная
  *

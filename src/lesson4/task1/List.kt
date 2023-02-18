@@ -180,7 +180,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  */
 fun times(a: List<Int>, b: List<Int>): Int {
     var c = 0
-    for (i in 0 until a.size) {
+    for (i in a.indices) {
         c += a[i] * b[i]
     }
     return c
@@ -270,12 +270,11 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  */
 fun convert(n: Int, base: Int): List<Int> {
     val list = mutableListOf<Int>()
-    var digit: Int
     var residual = n % base
     var nextVal = n / base
     list.add(residual)
     while (nextVal != 0) {
-        digit = nextVal
+        val digit = nextVal
         residual = digit % base
         nextVal = digit / base
         list.add(0, residual)
