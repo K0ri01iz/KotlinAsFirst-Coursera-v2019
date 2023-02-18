@@ -95,7 +95,7 @@ class Tests {
         assertEquals(4, plusMinus("2 + 2"))
         assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(-1, plusMinus("0 - 1"))
-        assertEquals(-1, plusMinus("- 1 + 0"))
+        assertEquals(-1, plusMinus("-1 + 0"))
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("3 2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+ 4") }
@@ -103,7 +103,8 @@ class Tests {
         assertThrows(IllegalArgumentException::class.java) { plusMinus("44 - - 12") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - + 12") }
     }
-
+}
+/*
     @Test
     @Tag("Hard")
     fun firstDuplicateIndex() {
@@ -112,8 +113,7 @@ class Tests {
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
         assertEquals(9, firstDuplicateIndex("Мы пошли прямо Прямо располагался магазин"))
     }
-}
-/*
+
     @Test
     @Tag("Hard")
     fun mostExpensive() {

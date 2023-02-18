@@ -214,15 +214,9 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    var result = -1
-    try {
-        if (jumps.any { it !in '0'..'9' && it != '-' && it != '%' && it != ' ' }) {
-            throw IllegalArgumentException()
-        }
+    return try {
         val listJumps = jumps.split(" ")
-        if (listJumps.isEmpty()) {
-            throw IllegalArgumentException()
-        }
+        var result = -1
         for (item in listJumps) {
             if ((item != "-") && (item != "%")) {
                 val jump = item.toInt()
@@ -231,10 +225,10 @@ fun bestLongJump(jumps: String): Int {
                 }
             }
         }
+        result
     } catch (error: IllegalArgumentException) {
-        return result
+        -1
     }
-    return result
 }
 
 /**
@@ -248,58 +242,29 @@ fun bestLongJump(jumps: String): Int {
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-/*fun bestHighJump(jumps: String): Int {
-    var result = -1
-    try {
-        if (jumps.any { it !in '0'..'9' && it != '+' && it != '%' && it != '-' && it != ' ' }) {
-            throw IllegalArgumentException()
-        }
-        if (!jumps.contains('+')) {
-            throw IllegalArgumentException()
-        }
-        val matches = Regex("""(\d+\s+[\%|\-]*\++)""").findAll(jumps)
-        val jumpList = matches.map { it.groupValues[0] }
-        for (element in jumpList) {
-            val successJump = element.filter { it != ' ' && it != '-' && it != '%' && it != '+' }.toInt()
-            if (successJump > result) {
-                result = successJump
-            }
-        }
-    } catch (error: IllegalArgumentException) {
-        return result
-    }
-    return result
-}*/
 
 fun bestHighJump(jumps: String): Int {
-    var result = -1
-    try {
-        if (jumps.any { it !in '0'..'9' && it != '+' && it != '%' && it != '-' && it != ' ' }) {
-            throw IllegalArgumentException()
-        }
-        if (!jumps.contains('+')) {
-            throw IllegalArgumentException()
-        }
+    return try {
         if (jumps.contains("++")) {
             throw IllegalArgumentException()
         }
         if (jumps.first() !in '0'..'9' && jumps.first() != ' ') {
             throw IllegalArgumentException()
         }
+        var result = -1
         val jumpList = jumps.filter { it != '%' && it != '-' }.split(' ')
-        var successJump = result
         for (i in 0 until jumpList.size step 2) {
             if (jumpList[i + 1] == "+") {
-                successJump = jumpList[i].toInt()
-            }
-            if (successJump > result) {
-                result = successJump
+                val successJump = jumpList[i].toInt()
+                if (successJump > result) {
+                    result = successJump
+                }
             }
         }
+        result
     } catch (error: IllegalArgumentException) {
-        return result
+        -1
     }
-    return result
 }
 
 /**
@@ -312,33 +277,24 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    var result = 0
-    if (expression.any { it !in '0'..'9' && it != '+' && it != '-' && it != ' ' }) {
-        throw IllegalArgumentException()
-    }
     if (expression.first() !in '0'..'9' && expression.first() != ' ' && expression.first() != '-') {
-        throw IllegalArgumentException()
-    }
-    if (expression.contains(Regex("""\d+\s+\d+"""))) {
         throw IllegalArgumentException()
     }
     if (expression.contains(Regex("""(\+|\-)+\s+(\+|\-)+"""))) {
         throw IllegalArgumentException()
     }
     val list = expression.split(' ')
-    var sign = 1
-    for (i in list.indices) {
-        if (list[i] == "-") {
-            sign = -1
-        } else if (list[i] == "+") {
-            sign = 1
-        } else {
-            result += sign * list[i].toInt()
+    var result = list.first().toInt()
+    for (i in 1 until list.size step 2) {
+        result += when (list[i]) {
+            "-" -> -1 * list[i + 1].toInt()
+            "+" -> list[i + 1].toInt()
+            else -> throw IllegalArgumentException()
         }
     }
     return result
 }
-
+/*
 /**
  * Сложная
  *
@@ -351,7 +307,7 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
 
 }
-/*
+
 /**
  * Сложная
  *
