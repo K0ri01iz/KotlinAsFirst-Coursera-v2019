@@ -253,7 +253,7 @@ fun bestHighJump(jumps: String): Int {
         }
         var result = -1
         val jumpList = jumps.filter { it != '%' && it != '-' }.split(' ')
-        for (i in 0 until jumpList.size step 2) {
+        for (i in jumpList.indices step 2) {
             if (jumpList[i + 1] == "+") {
                 val successJump = jumpList[i].toInt()
                 if (successJump > result) {
@@ -280,7 +280,7 @@ fun plusMinus(expression: String): Int {
     if (expression.first() !in '0'..'9' && expression.first() != ' ' && expression.first() != '-') {
         throw IllegalArgumentException()
     }
-    if (expression.contains(Regex("""(\+|\-)+\s+(\+|\-)+"""))) {
+    if (expression.contains(Regex("""([+\-])+\s+([+\-])+"""))) {
         throw IllegalArgumentException()
     }
     val list = expression.split(' ')
@@ -294,7 +294,7 @@ fun plusMinus(expression: String): Int {
     }
     return result
 }
-/*
+
 /**
  * Сложная
  *
@@ -305,7 +305,18 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-
+    val strList = str.toLowerCase().split(' ')
+    var sum = -1
+    for (i in 0..strList.size - 2) {
+        if (strList[i] != strList[i + 1]) {
+            sum += strList[i].length
+        }
+        if (strList[i] == strList[i + 1]) {
+            sum += i + 1
+            return sum
+        }
+    }
+    return sum
 }
 
 /**
@@ -319,7 +330,40 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    try {
+        if (description.any {
+                it != ' ' && it != ';' && it != '.' && it !in '0'..'9'
+                        && it !in 'а'..'я' && it !in 'А'..'Я'
+            }) {
+            throw IllegalArgumentException()
+        }
+        val list = description.split("; ")
+        val map = mutableMapOf<Double, String>()
+        for (element in list) {
+            val elementList = element.split(' ')
+            if (elementList.size > 2) {
+                throw IllegalArgumentException()
+            }
+            if (elementList.first().any { it !in 'а'..'я' && it !in 'А'..'Я' }) {
+                throw IllegalArgumentException()
+            }
+            if (elementList.last().any { it !in '0'..'9' && it != '.' }) {
+                throw IllegalArgumentException()
+            }
+            map[elementList.last().toDouble()] = elementList.first()
+        }
+        var maxVal = 0.0
+        for (item in map) {
+            if (item.key > maxVal) {
+                maxVal = item.key
+            }
+        }
+        return map[maxVal]!!
+    } catch (e: IllegalArgumentException) {
+        return ""
+    }
+}
 
 /**
  * Сложная
@@ -332,7 +376,84 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    try {
+        if (roman.contains("IIII") || roman.contains("XXXX") || roman.contains("CCCC")
+            || roman.contains("MMMM")
+        ) {
+            throw IllegalArgumentException()
+        }
+        val dexList = roman.toList().map {
+            when (it) {
+                'M' -> 1000
+                'D' -> 500
+                'C' -> 100
+                'L' -> 50
+                'X' -> 10
+                'V' -> 5
+                'I' -> 1
+                else -> throw IllegalArgumentException()
+            }
+        }
+        var dex = 0
+        for (i in dexList.indices) {
+            dex += dexList[i]
+            if (i != dexList.size - 1) {
+                when (dexList[i]) {
+                    100 -> {
+                        dex -= when (dexList[i + 1]) {
+                            1000 -> 200
+                            500 -> 200
+                            else -> 0
+                        }
+                    }
+
+                    10 -> {
+                        dex -= when (dexList[i + 1]) {
+                            1000 -> throw IllegalArgumentException()
+                            500 -> throw IllegalArgumentException()
+                            100 -> 20
+                            50 -> 20
+                            else -> 0
+                        }
+                    }
+
+                    1 -> {
+                        dex -= when (dexList[i + 1]) {
+                            10 -> 2
+                            5 -> 2
+                            1 -> 0
+                            else -> throw IllegalArgumentException()
+                        }
+                    }
+
+                    500 -> {
+                        if ((dexList[i + 1] == 1000) || (dexList[i + 1] == 500)) {
+                            throw IllegalArgumentException()
+                        }
+                    }
+
+                    50 -> {
+                        if ((dexList[i + 1] != 10) && (dexList[i + 1] != 5)
+                            && (dexList[i + 1] != 1)
+                        ) {
+                            throw IllegalArgumentException()
+                        }
+                    }
+
+                    5 -> {
+                        if (dexList[i + 1] != 1) {
+                            throw IllegalArgumentException()
+                        }
+                    }
+                }
+            }
+        }
+        return dex
+    } catch (e: IllegalArgumentException) {
+        return -1
+    }
+}
 
 /**
  * Очень сложная
@@ -370,5 +491,35 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
-*/
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (commands.any { it != '>' && it != '<' && it != '+' && it != '-' && it != '[' && it != ']' && it != ' ' }) {
+        throw IllegalArgumentException()
+    }
+    val bracketCheck = mutableListOf<Char>()
+    for (i in commands.indices) {
+        if (commands[i] == '[') {
+            if (i != commands.length - 1) {
+                bracketCheck += commands[i]
+            } else {
+                throw IllegalArgumentException()
+            }
+        }
+        if (commands[i] == ']') {
+            if (i != 0) {
+                bracketCheck += commands[i]
+            } else {
+                throw IllegalArgumentException()
+            }
+        }
+    }
+    if (bracketCheck.size % 2 != 0) {
+        throw IllegalArgumentException()
+    }
+    val comList = commands.toList()
+    val resList = mutableListOf<Int>()
+    for (i in 0 until cells) {
+        resList += 0
+    }
+
+    return resList
+}

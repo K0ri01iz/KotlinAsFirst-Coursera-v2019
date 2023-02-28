@@ -103,8 +103,7 @@ class Tests {
         assertThrows(IllegalArgumentException::class.java) { plusMinus("44 - - 12") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - + 12") }
     }
-}
-/*
+
     @Test
     @Tag("Hard")
     fun firstDuplicateIndex() {
@@ -131,6 +130,8 @@ class Tests {
         assertEquals(694, fromRoman("DCXCIV"))
         assertEquals(49, fromRoman("XLIX"))
         assertEquals(-1, fromRoman("Z"))
+        assertEquals(-1, fromRoman("MCMLXMXVIII"))
+        assertEquals(-1, fromRoman("MCMLXXVIICI"))
     }
 
     @Test
@@ -156,4 +157,3 @@ class Tests {
         assertThrows(IllegalStateException::class.java) { computeDeviceCells(20, ">>>>>>>>>>>>>", 12) }
     }
 }
-*/
