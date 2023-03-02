@@ -492,34 +492,99 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    if (commands.any { it != '>' && it != '<' && it != '+' && it != '-' && it != '[' && it != ']' && it != ' ' }) {
+    if (commands.any { it != ' ' && it != '>' && it != '<' && it != '+' && it != '-' && it != '[' && it != ']' }) {
         throw IllegalArgumentException()
     }
-    val bracketCheck = mutableListOf<Char>()
-    for (i in commands.indices) {
-        if (commands[i] == '[') {
-            if (i != commands.length - 1) {
-                bracketCheck += commands[i]
-            } else {
+    var bracketNum = 0
+    for (k in commands.indices) {
+        if (commands[k] == '[') {
+            if ((k == commands.length - 1) && (bracketNum == 0)) {
                 throw IllegalArgumentException()
+            } else {
+                bracketNum += 1
             }
         }
-        if (commands[i] == ']') {
-            if (i != 0) {
-                bracketCheck += commands[i]
-            } else {
+        if (commands[k] == ']') {
+            if (k == 0) {
                 throw IllegalArgumentException()
+            } else {
+                bracketNum += 1
             }
         }
     }
-    if (bracketCheck.size % 2 != 0) {
+    if (bracketNum % 2 != 0) {
         throw IllegalArgumentException()
     }
-    val comList = commands.toList()
+
     val resList = mutableListOf<Int>()
     for (i in 0 until cells) {
         resList += 0
     }
 
+    var i = cells / 2
+    var k = 0
+    var count = limit
+    while (count != 0) {
+        when (commands[k]) {
+            '>' -> {
+                if (i < cells) {
+                    i++
+                } else {
+                    throw IllegalStateException()
+                }
+            }
+
+            '<' -> {
+                if (i != 0) {
+                    i--
+                } else {
+                    throw IllegalStateException()
+                }
+            }
+
+            '+' -> {
+                resList[i] += 1
+            }
+
+            '-' -> {
+                resList[i] -= 1
+            }
+
+            '[' -> {
+                if (resList[i] == 0) {
+                    var brackets = 1
+                    do {
+                        k++
+                        if (commands[k] == '[') {
+                            brackets++
+                        }
+                        if (commands[k] == ']') {
+                            brackets--
+                        }
+                    } while (brackets != 0)
+                }
+            }
+
+            ']' -> {
+                if (resList[i] != 0) {
+                    var brackets = 1
+                    do {
+                        k--
+                        if (commands[k] == ']') {
+                            brackets++
+                        }
+                        if (commands[k] == '[') {
+                            brackets--
+                        }
+                    } while (brackets != 0)
+                }
+            }
+        }
+        k++
+        if (k == commands.length) {
+            return resList
+        }
+        count--
+    }
     return resList
 }
