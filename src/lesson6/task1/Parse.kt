@@ -38,7 +38,7 @@ fun timeSecondsToStr(seconds: Int): String {
     val second = seconds % 60
     return String.format("%02d:%02d:%02d", hour, minute, second)
 }
-/*
+
 /**
  * Пример: консольный ввод
  */
@@ -55,7 +55,7 @@ fun main() {
     } else {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
-}*/
+}
 
 /**
  * Средняя
@@ -332,14 +332,8 @@ fun firstDuplicateIndex(str: String): Int {
  */
 fun mostExpensive(description: String): String {
     try {
-        if (description.any {
-                it != ' ' && it != ';' && it != '.' && it !in '0'..'9'
-                        && it !in 'а'..'я' && it !in 'А'..'Я'
-            }) {
-            throw IllegalArgumentException()
-        }
         val list = description.split("; ")
-        val map = mutableMapOf<Double, String>()
+        val map = mutableMapOf<String, Double>()
         for (element in list) {
             val elementList = element.split(' ')
             if (elementList.size > 2) {
@@ -348,18 +342,15 @@ fun mostExpensive(description: String): String {
             if (elementList.first().any { it !in 'а'..'я' && it !in 'А'..'Я' }) {
                 throw IllegalArgumentException()
             }
-            if (elementList.last().any { it !in '0'..'9' && it != '.' }) {
-                throw IllegalArgumentException()
-            }
-            map[elementList.last().toDouble()] = elementList.first()
+            map[elementList.first()] = elementList.last().toDouble()
         }
-        var maxVal = 0.0
+        var maxValName = map.keys.first()
         for (item in map) {
-            if (item.key > maxVal) {
-                maxVal = item.key
+            if (item.value > map[maxValName]!!) {
+                maxValName = item.key
             }
         }
-        return map[maxVal]!!
+        return maxValName
     } catch (e: IllegalArgumentException) {
         return ""
     }
@@ -383,7 +374,7 @@ fun fromRoman(roman: String): Int {
         ) {
             throw IllegalArgumentException()
         }
-        val dexList = roman.toList().map {
+        val dexList = roman.map {
             when (it) {
                 'M' -> 1000
                 'D' -> 500
@@ -516,10 +507,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         throw IllegalArgumentException()
     }
 
-    val resList = mutableListOf<Int>()
-    for (i in 0 until cells) {
-        resList += 0
-    }
+    val resList = MutableList(cells) { 0 }
 
     var i = cells / 2
     var k = 0
